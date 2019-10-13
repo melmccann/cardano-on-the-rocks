@@ -14,7 +14,7 @@
 NODE_REST_URL="http://127.0.0.1:3101/api"
 
 BASE_FOLDER=~/adapool/
-JCLI=${BASE_FOLDER}"jcli"
+JCLI="jcli"
 
 WALLET_FOLDER=$BASE_FOLDER"wallet"
 POOL_FOLDER=$BASE_FOLDER"pool"
