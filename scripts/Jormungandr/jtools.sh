@@ -11,10 +11,10 @@
 
 ############### script settings ###################################
 
-NODE_REST_URL="http://127.0.0.1:8080/api"
+NODE_REST_URL="http://127.0.0.1:3101/api"
 
-BASE_FOLDER=~/jormungandr/
-JCLI=${BASE_FOLDER}"jcli"
+BASE_FOLDER=~/adapool/
+JCLI="jcli"
 
 WALLET_FOLDER=$BASE_FOLDER"wallet"
 POOL_FOLDER=$BASE_FOLDER"pool"
