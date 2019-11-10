@@ -7,7 +7,7 @@
 # Please donate some (real) ADA to"
 # Ae2tdPwUPEZJy2DbueGwkLjCqNcypkj5Aa3waEZdvBKMsNqjNw2kTqPfyhe"
 # Thanks in advance!"
-
+#http://patorjk.com/software/taag/#p=display&f=Roman&t=-%3E%20Show
 
 ############### script settings ###################################
 
@@ -75,7 +75,19 @@ OPERATION=${1}
 case $OPERATION in
 
   update) 
-	
+#
+#ooooo     ooo                  .o8                .             
+#`888'     `8'                 "888              .o8             
+# 888       8  oo.ooooo.   .oooo888   .oooo.   .o888oo  .ooooo.  
+# 888       8   888' `88b d88' `888  `P  )88b    888   d88' `88b 
+# 888       8   888   888 888   888   .oP"888    888   888ooo888 
+# `88.    .8'   888   888 888   888  d8(  888    888 . 888    .o 
+#   `YbodP'     888bod8P' `Y8bod88P" `Y888""8o   "888" `Y8bod8P' 
+#               888                                              
+#              o888o                                             
+#                                                                
+
+
 	LATEST_RELEASE_JSON=$(curl --proto '=https' --tlsv1.2 -sSf https://api.github.com/repos/input-output-hk/jormungandr/releases/latest)
 	LATEST_RELEASE=$(echo $LATEST_RELEASE_JSON | jq -r .tag_name)
 	LATEST_RELEASE_PUBLISHED=$(echo $LATEST_RELEASE_JSON | jq -r .published_at)
@@ -125,6 +137,17 @@ case $OPERATION in
   ;; ###################################################################
 
   wallet) 
+#
+#oooooo   oooooo     oooo           oooo  oooo                .   
+# `888.    `888.     .8'            `888  `888              .o8   
+#  `888.   .8888.   .8'    .oooo.    888   888   .ooooo.  .o888oo 
+#   `888  .8'`888. .8'    `P  )88b   888   888  d88' `88b   888   
+#    `888.8'  `888.8'      .oP"888   888   888  888ooo888   888   
+#     `888'    `888'      d8(  888   888   888  888    .o   888 . 
+#      `8'      `8'       `Y888""8o o888o o888o `Y8bod8P'   "888" 
+#                                                                 
+#                                                                 
+#                                                                 
 
 	if [ ${#} -lt 3 ]; then
 		usage ${0}
@@ -362,6 +385,17 @@ case $OPERATION in
   ;; ###################################################################
 
   pool)
+#
+#ooooooooo.                       oooo  
+#`888   `Y88.                     `888  
+# 888   .d88'  .ooooo.   .ooooo.   888  
+# 888ooo88P'  d88' `88b d88' `88b  888  
+# 888         888   888 888   888  888  
+# 888         888   888 888   888  888  
+#o888o        `Y8bod8P' `Y8bod8P' o888o 
+#                                       
+#                                       
+#                                       
 
 	if [ ${#} -lt 3 ]; then
 		usage ${0}
@@ -372,6 +406,17 @@ case $OPERATION in
 	
 	case $SUBCOMMAND in
 	  register)  # [POOL_NAME] [WALLET_NAME]
+#
+#                    ooooooooo.                         o8o               .                      
+#        Yb          `888   `Y88.                       `"'             .o8                      
+#         `Yb         888   .d88'  .ooooo.   .oooooooo oooo   .oooo.o .o888oo  .ooooo.  oooo d8b 
+#           `Yb       888ooo88P'  d88' `88b 888' `88b  `888  d88(  "8   888   d88' `88b `888""8P 
+#8888888    .dP       888`88b.    888ooo888 888   888   888  `"Y88b.    888   888ooo888  888     
+#         .dP         888  `88b.  888    .o `88bod8P'   888  o.  )88b   888 . 888    .o  888     
+#        dP          o888o  o888o `Y8bod8P' `8oooooo.  o888o 8""888P'   "888" `Y8bod8P' d888b    
+#                                           d"     YD                                            
+#                                           "Y88888P'                                            
+#                                                                                                
 
 		POOL_NAME=${3}
 		WALLET_NAME=${4}
@@ -482,7 +527,18 @@ case $OPERATION in
 	  ;; ###################################################################
 
 	  show)  # [POOL_ID]
-		
+#
+#                     .oooooo..o oooo                                   
+#        Yb          d8P'    `Y8 `888                                   
+#         `Yb        Y88bo.       888 .oo.    .ooooo.  oooo oooo    ooo 
+#           `Yb       `"Y8888o.   888P"Y88b  d88' `88b  `88. `88.  .8'  
+#8888888    .dP           `"Y88b  888   888  888   888   `88..]88..8'   
+#         .dP        oo     .d8P  888   888  888   888    `888'`888'    
+#        dP          8""88888P'  o888o o888o `Y8bod8P'     `8'  `8'     
+#                                                                       
+#                                                                       
+#                                                                       
+	
 		printf '%b\n' $(${JCLI} rest v0 stake-pools get --host "${NODE_REST_URL}" | grep ${3})
 	
 	  ;; ###################################################################
@@ -496,6 +552,17 @@ case $OPERATION in
 	
   ;; ###################################################################
 
+#
+
+# .oooooo..o     .             oooo                  
+#d8P'    `Y8   .o8             `888                  
+#Y88bo.      .o888oo  .oooo.    888  oooo   .ooooo.  
+# `"Y8888o.    888   `P  )88b   888 .8P'   d88' `88b 
+#     `"Y88b   888    .oP"888   888888.    888ooo888 
+#oo     .d8P   888 . d8(  888   888 `88b.  888    .o 
+#8""88888P'    "888" `Y888""8o o888o o888o `Y8bod8P' 
+                                                     
+
   stake)
 
 	if [ ${#} -lt 3 ]; then
@@ -507,7 +574,19 @@ case $OPERATION in
 	
 	case $SUBCOMMAND in
 	  delegate)  # [WALLET_NAME] [POOL_NAME] 
-		
+#
+#
+#               oooooooooo.             oooo                                     .             
+#        Yb     `888'   `Y8b            `888                                   .o8             
+#         `Yb    888      888  .ooooo.   888   .ooooo.   .oooooooo  .oooo.   .o888oo  .ooooo.  
+#           `Yb  888      888 d88' `88b  888  d88' `88b 888' `88b  `P  )88b    888   d88' `88b 
+#8888888    .dP  888      888 888ooo888  888  888ooo888 888   888   .oP"888    888   888ooo888 
+#         .dP    888     d88' 888    .o  888  888    .o `88bod8P'  d8(  888    888 . 888    .o 
+#        dP     o888bood8P'   `Y8bod8P' o888o `Y8bod8P' `8oooooo.  `Y888""8o   "888" `Y8bod8P' 
+#                                                       d"     YD                              
+#                                                       "Y88888P'                              
+#                                                                                              
+#
 		POOL_NAME=${4}
 		WALLET_NAME=${3}
 		
