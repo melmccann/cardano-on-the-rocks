@@ -1,0 +1,13 @@
+# IDE files
+/.idea
+/.idea/workspace.xml
+
+# MacOS
+.DS_Store
+
+### Jekyll ###
+_site
+.sass-cache
+.jekyll-metadata
+Gemfile.lock
+/docs/vendor
