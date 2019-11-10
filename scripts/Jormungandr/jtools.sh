@@ -75,15 +75,6 @@ OPERATION=${1}
 case $OPERATION in
 
   update) 
-	
-	if [ ${#} -lt 2 ]; then
-		DESIRED_RELEASE_JSON=$(curl --proto '=https' --tlsv1.2 -sSf https://api.github.com/repos/input-output-hk/jormungandr/releases/latest)
-	else
-		DESIRED_RELEASE_JSON=$(curl --proto '=https' --tlsv1.2 -sSf https://api.github.com/repos/input-output-hk/jormungandr/releases/tags/${2})
-	fi
-	DESIRED_RELEASE=$(echo $DESIRED_RELEASE_JSON | jq -r .tag_name)
-	DESIRED_RELEASE_PUBLISHED=$(echo $DESIRED_RELEASE_JSON | jq -r .published_at)
-	DESIRED_RELEASE_CLEAN=$(echo ${DESIRED_RELEASE} | cut -c2-)
 #
 #ooooo     ooo                  .o8                .
 #`888'     `8'                 "888              .o8
@@ -95,7 +86,14 @@ case $OPERATION in
 #               888
 #              o888o
 #
-
+	if [ ${#} -lt 2 ]; then
+		DESIRED_RELEASE_JSON=$(curl --proto '=https' --tlsv1.2 -sSf https://api.github.com/repos/input-output-hk/jormungandr/releases/latest)
+	else
+		DESIRED_RELEASE_JSON=$(curl --proto '=https' --tlsv1.2 -sSf https://api.github.com/repos/input-output-hk/jormungandr/releases/tags/${2})
+	fi
+	DESIRED_RELEASE=$(echo $DESIRED_RELEASE_JSON | jq -r .tag_name)
+	DESIRED_RELEASE_PUBLISHED=$(echo $DESIRED_RELEASE_JSON | jq -r .published_at)
+	DESIRED_RELEASE_CLEAN=$(echo ${DESIRED_RELEASE} | cut -c2-)
 
 	LATEST_RELEASE_JSON=$(curl --proto '=https' --tlsv1.2 -sSf https://api.github.com/repos/input-output-hk/jormungandr/releases/latest)
 	LATEST_RELEASE=$(echo $LATEST_RELEASE_JSON | jq -r .tag_name)
@@ -252,6 +250,17 @@ EOF
 	  ;; ###################################################################
 	
 	  list) # no parameters
+#
+#                    ooooo         o8o               .
+#        Yb          `888'         `"'             .o8
+#         `Yb         888         oooo   .oooo.o .o888oo
+#           `Yb       888         `888  d88(  "8   888
+#8888888    .dP       888          888  `"Y88b.    888
+#         .dP         888       o  888  o.  )88b   888 .
+#        dP          o888ooooood8 o888o 8""888P'   "888"
+#
+#
+#
 
 		for WALLET_FOLDER_NAME in ${WALLET_FOLDER}/*/
 		do
