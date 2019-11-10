@@ -146,7 +146,7 @@ case $OPERATION in
 		fi
 		
 		# create a personal wallet key
-		${JCLI} key generate --type=Ed25519 > "${WALLET_FOLDER}/${WALLET_NAME}/ed25519.key"
+		${JCLI} key generate --type=ed25519extended > "${WALLET_FOLDER}/${WALLET_NAME}/ed25519.key"
 		MY_ED25519_key=$(cat "${WALLET_FOLDER}/${WALLET_NAME}/ed25519.key")
 		MY_ED25519_file="${WALLET_FOLDER}/${WALLET_NAME}/ed25519.key"
 		echo "$MY_ED25519_key" | ${JCLI} key to-public > "${WALLET_FOLDER}/${WALLET_NAME}/ed25519.pub"
@@ -322,7 +322,7 @@ case $OPERATION in
 		${JCLI} transaction add-account "${SOURCE_ADDRESS}" "${AMOUNT_WITH_FEES}" --staging "${STAGING_FILE}"
 		${JCLI} transaction add-output "${DESTINATION_ADDRESS}" "${AMOUNT}" --staging "${STAGING_FILE}"
 		${JCLI} transaction finalize --staging ${STAGING_FILE}
-		TRANSACTION_ID=$(${JCLI} transaction id --staging ${STAGING_FILE})
+		TRANSACTION_ID=$(${JCLI} transaction data-for-witness --staging ${STAGING_FILE})
 		WITNESS_SECRET_FILE="${TMPDIR}/witness.secret.$$"
 		WITNESS_OUTPUT_FILE="${TMPDIR}/witness.out.$$"
 
@@ -420,7 +420,7 @@ case $OPERATION in
 		mkdir -p "${POOL_FOLDER}/${POOL_NAME}"
 
 		# generate pool owner wallet
-		${JCLI} key generate --type=Ed25519 > "${POOL_FOLDER}/${POOL_NAME}/stake_pool_owner_wallet.key"
+		${JCLI} key generate --type=ed25519extended > "${POOL_FOLDER}/${POOL_NAME}/stake_pool_owner_wallet.key"
 		cat "${POOL_FOLDER}/${POOL_NAME}/stake_pool_owner_wallet.key" | ${JCLI} key to-public > "${POOL_FOLDER}/${POOL_NAME}/stake_pool_owner_wallet.pub"
 		${JCLI} address account "$(cat ${POOL_FOLDER}/${POOL_NAME}/stake_pool_owner_wallet.pub)" --testing > "${POOL_FOLDER}/${POOL_NAME}/stake_pool_owner_wallet.address"
 
@@ -440,7 +440,7 @@ case $OPERATION in
 		--start-validity 0 > "$POOL_FOLDER/${POOL_NAME}/stake_pool.cert"
 
 		# sign the stake pool certificate with the pool owner wallet
-		cat "${POOL_FOLDER}/${POOL_NAME}/stake_pool.cert" | ${JCLI} certificate sign "${POOL_FOLDER}/${POOL_NAME}/stake_pool_owner_wallet.key" > "${POOL_FOLDER}/${POOL_NAME}/stake_pool.signcert"
+		cat "${POOL_FOLDER}/${POOL_NAME}/stake_pool.cert" | ${JCLI} certificate sign -k "${POOL_FOLDER}/${POOL_NAME}/stake_pool_owner_wallet.key" > "${POOL_FOLDER}/${POOL_NAME}/stake_pool.signcert"
 
 		# get the stake pool ID
 		cat "${POOL_FOLDER}/${POOL_NAME}/stake_pool.signcert" | ${JCLI} certificate get-stake-pool-id > "${POOL_FOLDER}/${POOL_NAME}/stake_pool.id"
@@ -453,9 +453,9 @@ case $OPERATION in
 		STAGING_FILE="${TMPDIR}/staging.$$.transaction"
 		${JCLI} transaction new --staging ${STAGING_FILE}
 		${JCLI} transaction add-account "${SOURCE_ADDRESS}" "${AMOUNT_WITH_FEES}" --staging "${STAGING_FILE}"
-		${JCLI} transaction add-certificate --staging ${STAGING_FILE} $(cat "${POOL_FOLDER}/${POOL_NAME}/stake_pool.signcert")
+		${JCLI} transaction add-certificate --staging ${STAGING_FILE} $(cat "${POOL_FOLDER}/${POOL_NAME}/stake_pool.cert")
 		${JCLI} transaction finalize --staging ${STAGING_FILE}
-		TRANSACTION_ID=$(${JCLI} transaction id --staging ${STAGING_FILE})
+		TRANSACTION_ID=$(${JCLI} transaction data-for-witness --staging ${STAGING_FILE})
 		WITNESS_SECRET_FILE="${TMPDIR}/witness.secret.$$"
 		WITNESS_OUTPUT_FILE="${TMPDIR}/witness.out.$$"
 
@@ -560,7 +560,7 @@ case $OPERATION in
 		fi
 		
 		# create a personal wallet key
-		${JCLI} key generate --type=Ed25519 > "${WALLET_FOLDER}/${WALLET_NAME}/ed25519_stake.key"
+		${JCLI} key generate --type=ed25519extended > "${WALLET_FOLDER}/${WALLET_NAME}/ed25519_stake.key"
 		MY_ED25519_stake_key=$(cat "${WALLET_FOLDER}/${WALLET_NAME}/ed25519_stake.key")
 		MY_ED25519_stake_file="${WALLET_FOLDER}/${WALLET_NAME}/ed25519_stake.key"
 		echo "$MY_ED25519_stake_key" | ${JCLI} key to-public > "${WALLET_FOLDER}/${WALLET_NAME}/ed25519_stake.pub"
@@ -568,7 +568,7 @@ case $OPERATION in
 
 		# generate a delegation certificate (private wallet > stake pool)
 		${JCLI} certificate new stake-delegation ${POOLID} ${SOURCE_PUB} > "${WALLET_FOLDER}/${WALLET_NAME}/${POOL_NAME}_stake_delegation.cert"
-		cat "${WALLET_FOLDER}/${WALLET_NAME}/${POOL_NAME}_stake_delegation.cert" | ${JCLI} certificate sign ${MY_ED25519_stake_file} > "${WALLET_FOLDER}/${WALLET_NAME}/${POOL_NAME}_stake_delegation.signcert"
+		cat "${WALLET_FOLDER}/${WALLET_NAME}/${POOL_NAME}_stake_delegation.cert" | ${JCLI} certificate sign -k ${MY_ED25519_stake_file} > "${WALLET_FOLDER}/${WALLET_NAME}/${POOL_NAME}_stake_delegation.signcert"
 		
 		TMPDIR=$(mktemp -d)
 		STAGING_FILE="${TMPDIR}/staging.$$.transaction"
@@ -576,7 +576,7 @@ case $OPERATION in
 		${JCLI} transaction add-account "${SOURCE_ADDRESS}" "${AMOUNT_WITH_FEES}" --staging "${STAGING_FILE}"
 		${JCLI} transaction add-certificate --staging ${STAGING_FILE} $(cat "${WALLET_FOLDER}/${WALLET_NAME}/${POOL_NAME}_stake_delegation.signcert")
 		${JCLI} transaction finalize --staging ${STAGING_FILE}
-		TRANSACTION_ID=$(${JCLI} transaction id --staging ${STAGING_FILE})
+		TRANSACTION_ID=$(${JCLI} transaction data-for-witness --staging ${STAGING_FILE})
 		WITNESS_SECRET_FILE="${TMPDIR}/witness.secret.$$"
 		WITNESS_OUTPUT_FILE="${TMPDIR}/witness.out.$$"
 
