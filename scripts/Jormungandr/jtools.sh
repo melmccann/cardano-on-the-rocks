@@ -1,6 +1,15 @@
 #!/bin/bash
 
+# jtools version 0.3 fixing breaking changes in Jormungandr 0.7 release
+# - paramaters for jcli new stake-delegation reordered
+#
 # jtools version 0.2
+# - fixing breaking changes in Jormungandr 0.7.0.RC5
+#  - switch from signcert to cert
+#  - transaction athentication
+# - added wallet list
+#
+# jtools version 0.1 initial release
 # 
 # inspired by scripts from @NicolasDP and @disassembler
 # 
@@ -24,8 +33,8 @@ POOL_FOLDER=$BASE_FOLDER"pool"
 JTOOLS_LOG=${BASE_FOLDER}jtools-history.log
 
 # update from asset
-ASSET_PLATTFORM="x86_64-unknown-linux-gnu"		# Debian, Ubuntu, ...
-#ASSET_PLATTFORM="x86_64-unknown-linux-musl"	# CentOS, ...
+ASSET_PLATTFORM="x86_64-unknown-linux-gnu"		# Debian, Ubuntu, CentOS 8,...
+#ASSET_PLATTFORM="x86_64-unknown-linux-musl"	# CentOS 7, ...
 #ASSET_PLATTFORM="aarch64-unknown-linux-gnu" 	# Armbian, Raspian, RockPi, ARM 64bit, ...
 
 ###################################################################
@@ -90,15 +99,10 @@ case $OPERATION in
 		DESIRED_RELEASE_JSON=$(curl --proto '=https' --tlsv1.2 -sSf https://api.github.com/repos/input-output-hk/jormungandr/releases/latest)
 	else
 		DESIRED_RELEASE_JSON=$(curl --proto '=https' --tlsv1.2 -sSf https://api.github.com/repos/input-output-hk/jormungandr/releases/tags/${2})
-	fi
+	fi	
 	DESIRED_RELEASE=$(echo $DESIRED_RELEASE_JSON | jq -r .tag_name)
 	DESIRED_RELEASE_PUBLISHED=$(echo $DESIRED_RELEASE_JSON | jq -r .published_at)
 	DESIRED_RELEASE_CLEAN=$(echo ${DESIRED_RELEASE} | cut -c2-)
-
-	LATEST_RELEASE_JSON=$(curl --proto '=https' --tlsv1.2 -sSf https://api.github.com/repos/input-output-hk/jormungandr/releases/latest)
-	LATEST_RELEASE=$(echo $LATEST_RELEASE_JSON | jq -r .tag_name)
-	LATEST_RELEASE_PUBLISHED=$(echo $LATEST_RELEASE_JSON | jq -r .published_at)
-	LATEST_RELEASE_CLEAN=$(echo ${LATEST_RELEASE} | cut -c2-)
 
 	if [ -f "${JCLI}" ]; then
 		CURRENT_VERSION=$(${JCLI} --version | cut -c 6-)
@@ -175,7 +179,7 @@ p2p:
     - address: /ip4/54.153.19.202/tcp/3000
       id: ed25519_pk1j9nj2u0amlg28k27pw24hre0vtyp3ge0xhq6h9mxwqeur48u463s0crpfk
   public_address: "/ip4/${my_public_ip}/tcp/8201"
-  private_id:
+  private_id: 
   topics_of_interest:
     messages: high
     blocks: high
@@ -743,7 +747,7 @@ EOF
 		MY_ED25519_stake_pub=$(cat "${WALLET_FOLDER}/${WALLET_NAME}/ed25519_stake.pub")
 
 		# generate a delegation certificate (private wallet > stake pool)
-		${JCLI} certificate new stake-delegation ${POOLID} ${SOURCE_PUB} > "${WALLET_FOLDER}/${WALLET_NAME}/${POOL_NAME}_stake_delegation.cert"
+		${JCLI} certificate new stake-delegation ${SOURCE_PUB} ${POOLID} > "${WALLET_FOLDER}/${WALLET_NAME}/${POOL_NAME}_stake_delegation.cert"
 		
 		TMPDIR=$(mktemp -d)
 		STAGING_FILE="${TMPDIR}/staging.$$.transaction"
