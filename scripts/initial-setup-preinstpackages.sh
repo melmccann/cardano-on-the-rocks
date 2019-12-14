@@ -4,10 +4,20 @@
 # for the Cardano on the Rocks (RockPi) project
 #
 # Author: m@rkus.it
-# version 2019-09-09
+#
+# version 2019-09-09 
+# initial release
+#
+# version 2019-11-20 
+# new INITIAL_SETUP_VERSION variable to handle different pre-built Armbian image versions
+# 191020 has more pre-installed packages (git clone timeouts in some contries like China)
+# 
 
 main() {
 
+	# INITIAL_SETUP_VERSION is set in the image's /usr/local/bin/cardano-on-the-rocks.sh script 
+	say "initial setup requested from Armbian image version ${INITIAL_SETUP_VERSION}"
+	
 	# collect system values
 	BOARD=`uname -n`
 	if [ -f /etc/os-release ]; then
@@ -42,28 +52,26 @@ main() {
 		
 		# pimp apt to retry 3 times (for weak internet connections)
 		echo "APT::Acquire::Retries \"3\";" > /etc/apt/apt.conf.d/80-retries
+
+		apt-get --yes update
 		
-		say "turn also green LED on" "log"
-		cd /sys/class/gpio
-		echo $RGB_GPIO_GREEN > export
-		cd gpio$RGB_GPIO_GREEN
-		echo out > direction
-		echo 1 > value
-		cd ~
+		if [ ${INITIAL_SETUP_VERSION} < 191120 ] ; then
 		
-		say "clone OLED library" "log"
-		mkdir ~/cardano-on-the-rocks
-		cd ~/cardano-on-the-rocks
-		git clone https://github.com/clio-one/luma.oled.git
+			say "clone OLED library" "log"
+			mkdir ~/cardano-on-the-rocks
+			cd ~/cardano-on-the-rocks
+			git clone https://github.com/clio-one/luma.oled.git
+			
+			say "clone Cardano display content" "log"
+			git clone https://github.com/clio-one/cardano-luma.git
+			
+		fi
 		
 		say "install OLED library" "log"
-		cd luma.oled
+		cd /root/cardano-on-the-rocks/luma.oled
 		sudo python setup.py install
 		cd ..
-		
-		say "clone Cardano display content" "log"
-		git clone https://github.com/clio-one/cardano-luma.git
-		
+
 		say "blue and green LED off" "log"
 		cd /sys/class/gpio
 		echo $RGB_GPIO_GREEN > export
@@ -88,12 +96,27 @@ main() {
 		echo 1 > value
 		cd ~
 		
-		say "install and enable the firewall" "log"
-		aptInstall iptables
-		aptInstall ufw
-		ufw allow ssh/tcp
-		ufw logging on
-		ufw --force enable
+		if [ ${INITIAL_SETUP_VERSION} < 191120 ] ; then
+		
+			say "install the firewall" "log"
+			#aptInstall "iptables"
+			aptInstall "ufw"
+			say "enable SSH access" "log"
+			ufw allow ssh/tcp
+			ufw logging on
+			ufw --force enable
+
+			say "enable armbian-config"
+			aptInstall "armbian-config"
+
+			#say "enable net-tools"
+			#aptInstall "net-tools"
+
+			say "enable unzip"
+			aptInstall "unzip"
+
+		fi
+		
 		
 		say "Completing the initial setup and prepare for future boots" "log"
 		say "remove the initial setup script" "log"

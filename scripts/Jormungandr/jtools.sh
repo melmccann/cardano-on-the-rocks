@@ -1,6 +1,18 @@
 #!/bin/bash
 
+# jtools version 0.4 fixing breaking changes in Jormungandr 0.8 release
+# - removed serial option for pool registration
+#
+# jtools version 0.3 fixing breaking changes in Jormungandr 0.7 release
+# - paramaters for jcli new stake-delegation reordered
+#
 # jtools version 0.2
+# - fixing breaking changes in Jormungandr 0.7.0.RC5
+#  - switch from signcert to cert
+#  - transaction athentication
+# - added wallet list
+#
+# jtools version 0.1 initial release
 # 
 # inspired by scripts from @NicolasDP and @disassembler
 # 
@@ -95,11 +107,6 @@ case $OPERATION in
 	DESIRED_RELEASE_PUBLISHED=$(echo $DESIRED_RELEASE_JSON | jq -r .published_at)
 	DESIRED_RELEASE_CLEAN=$(echo ${DESIRED_RELEASE} | cut -c2-)
 
-	LATEST_RELEASE_JSON=$(curl --proto '=https' --tlsv1.2 -sSf https://api.github.com/repos/input-output-hk/jormungandr/releases/latest)
-	LATEST_RELEASE=$(echo $LATEST_RELEASE_JSON | jq -r .tag_name)
-	LATEST_RELEASE_PUBLISHED=$(echo $LATEST_RELEASE_JSON | jq -r .published_at)
-	LATEST_RELEASE_CLEAN=$(echo ${LATEST_RELEASE} | cut -c2-)
-
 	if [ -f "${JCLI}" ]; then
 		CURRENT_VERSION=$(${JCLI} --version | cut -c 6-)
 		
@@ -120,7 +127,7 @@ case $OPERATION in
 					#cp -f config/* config/rollback
 					#rm -f config/*
 					#tar -xzf $FILE -C bin
-					tar -xzf $FILE
+					tar -C ${BASE_FOLDER} -xzf $FILE
 					rm $FILE
 					say "updated Jormungandr from ${CURRENT_VERSION} to ${DESIRED_RELEASE_CLEAN}" "log"
 				;;
@@ -147,7 +154,7 @@ case $OPERATION in
 				mkdir -p ${BASE_FOLDER}scripts
 				#mkdir -p ${BASE_FOLDER}www/cgi-bin
 				#tar -xzf $FILE -C bin
-				tar -xzf $FILE
+				tar -C ${BASE_FOLDER} -xzf $FILE
 				rm $FILE
 : '				my_public_ip=$(curl -4 ifconfig.co)
 				cat > config/node-config.yaml <<- EOF
@@ -175,7 +182,7 @@ p2p:
     - address: /ip4/54.153.19.202/tcp/3000
       id: ed25519_pk1j9nj2u0amlg28k27pw24hre0vtyp3ge0xhq6h9mxwqeur48u463s0crpfk
   public_address: "/ip4/${my_public_ip}/tcp/8201"
-  private_id:
+  private_id: 
   topics_of_interest:
     messages: high
     blocks: high
@@ -264,8 +271,8 @@ EOF
 
 		for WALLET_FOLDER_NAME in ${WALLET_FOLDER}/*/
 		do
-			WALLET_FOLDER_NAME=${WALLET_FOLDER_NAME%*/}
-			echo ${WALLET_FOLDER_NAME##*/}
+			WALLET_FOLDER_NAME=${WALLET_FOLDER_NAME%*/}      
+			echo ${WALLET_FOLDER_NAME##*/}    
 			if [ -f "${WALLET_FOLDER_NAME}/ed25519.account" ]; then
 				WALLET_ADDRESS=$(cat "${WALLET_FOLDER_NAME}/ed25519.account")
 				RESULT=$(${JCLI} rest v0 account get ${WALLET_ADDRESS} --host ${NODE_REST_URL} )
@@ -278,9 +285,9 @@ EOF
 			fi
 		done
 
-
+		
 	  ;; ###################################################################
-
+	
 	  show) # [WALLET_NAME]
 		
 		WALLET_NAME=${3}
@@ -743,7 +750,7 @@ EOF
 		MY_ED25519_stake_pub=$(cat "${WALLET_FOLDER}/${WALLET_NAME}/ed25519_stake.pub")
 
 		# generate a delegation certificate (private wallet > stake pool)
-		${JCLI} certificate new stake-delegation ${POOLID} ${SOURCE_PUB} > "${WALLET_FOLDER}/${WALLET_NAME}/${POOL_NAME}_stake_delegation.cert"
+		${JCLI} certificate new stake-delegation ${SOURCE_PUB} ${POOLID} > "${WALLET_FOLDER}/${WALLET_NAME}/${POOL_NAME}_stake_delegation.cert"
 		
 		TMPDIR=$(mktemp -d)
 		STAGING_FILE="${TMPDIR}/staging.$$.transaction"
