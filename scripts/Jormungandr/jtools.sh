@@ -6,8 +6,8 @@
 # jtools version 0.3 fixing breaking changes in Jormungandr 0.7 release
 # - paramaters for jcli new stake-delegation reordered
 #
-# jtools version 0.2
-# - fixing breaking changes in Jormungandr 0.7.0.RC5
+# jtools version 0.2 
+# - fixing breaking changes in Jormungandr 0.7.0.RC5 
 #  - switch from signcert to cert
 #  - transaction athentication
 # - added wallet list
@@ -182,7 +182,7 @@ p2p:
     - address: /ip4/54.153.19.202/tcp/3000
       id: ed25519_pk1j9nj2u0amlg28k27pw24hre0vtyp3ge0xhq6h9mxwqeur48u463s0crpfk
   public_address: "/ip4/${my_public_ip}/tcp/8201"
-  private_id: 
+  private_id:
   topics_of_interest:
     messages: high
     blocks: high
@@ -271,8 +271,8 @@ EOF
 
 		for WALLET_FOLDER_NAME in ${WALLET_FOLDER}/*/
 		do
-			WALLET_FOLDER_NAME=${WALLET_FOLDER_NAME%*/}      
-			echo ${WALLET_FOLDER_NAME##*/}    
+			WALLET_FOLDER_NAME=${WALLET_FOLDER_NAME%*/}
+			echo ${WALLET_FOLDER_NAME##*/}
 			if [ -f "${WALLET_FOLDER_NAME}/ed25519.account" ]; then
 				WALLET_ADDRESS=$(cat "${WALLET_FOLDER_NAME}/ed25519.account")
 				RESULT=$(${JCLI} rest v0 account get ${WALLET_ADDRESS} --host ${NODE_REST_URL} )
@@ -285,9 +285,9 @@ EOF
 			fi
 		done
 
-		
+
 	  ;; ###################################################################
-	
+
 	  show) # [WALLET_NAME]
 		
 		WALLET_NAME=${3}
